@@ -44,6 +44,24 @@ namespace milk {
 		return m_data.size();
 	}
 
+	void Packet::resize(size_t size) {
+		m_data.resize(size);
+	}
+
+	void Packet::reserve(size_t size) {
+		m_data.reserve(size);
+	}
+
+	void Packet::clear() noexcept {
+		m_data.clear();
+		m_valid = true;
+		resetPosition();
+	}
+
+	void Packet::resetPosition() noexcept {
+		m_position = 0;
+	}
+
 	void Packet::writeData(const void* data, size_t size) {
 		if (!isValid())
 			return;
@@ -54,23 +72,23 @@ namespace milk {
 	}
 
 	void Packet::peekData(void* data, size_t size) const {
-		if (!isValid() || m_caret + size > m_data.size())
+		if (!isValid() || m_position + size > m_data.size())
 			return;
 
-		memcpy(data, m_data.data() + m_caret, size);
+		memcpy(data, m_data.data() + m_position, size);
 	}
 
 	void Packet::readData(void* data, size_t size) {
 		if (!isValid())
 			return;
 		
-		if (m_caret + size > m_data.size()) {
+		if (m_position + size > m_data.size()) {
 			invalidate();
 			return;
 		}
 
-		memcpy(data, m_data.data() + m_caret, size);
-		m_caret += size;
+		memcpy(data, m_data.data() + m_position, size);
+		m_position += size;
 	}
 
 	void Packet::writeBool(bool value) {
@@ -105,22 +123,22 @@ namespace milk {
 	}
 
 	uint8_t Packet::peekUByte() const {
-		if (!isValid() || m_caret >= m_data.size())
+		if (!isValid() || m_position >= m_data.size())
 			return 0;
 
-		return m_data[m_caret];
+		return m_data[m_position];
 	}
 
 	uint8_t Packet::readUByte() {
 		if (!isValid())
 			return 0;
 
-		if (m_caret + 1 > m_data.size()) {
+		if (m_position + 1 > m_data.size()) {
 			invalidate();
 			return 0;
 		}
 
-		return m_data[m_caret++];
+		return m_data[m_position++];
 	}
 
 	void Packet::writeShort(int16_t value) {
@@ -217,35 +235,40 @@ namespace milk {
 		return std::bit_cast<double>(readLong());
 	}
 
-	void Packet::writeString(const std::string& value) {
-		writeVarInt(value.size());
+	void Packet::writeString(const std::string& value, size_t maxSize) {
+		if (value.size() > maxSize * 3 + 3) {
+			invalidate();
+			return;
+		}
+
+		writeVarInt(int32_t(value.size()));
 		writeData(value.data(), value.size());
 	}
 
-	std::string Packet::peekString() const {
+	std::string Packet::peekString(size_t maxSize) const {
 		size_t offset = 0;
 		int32_t size = peekVarInt(offset);
 
-		if (!isValid() || m_caret + size + offset > m_data.size())
+		if (!isValid() || m_position + size + offset > m_data.size() || size > maxSize * 3 + 3)
 			return "";
 
-		std::string str(static_cast<const char*>(data()) + m_caret + offset, size);
+		std::string str(static_cast<const char*>(data()) + m_position + offset, size);
 		return str;
 	}
 
-	std::string Packet::readString() {
+	std::string Packet::readString(size_t maxSize) {
 		int32_t size = readVarInt();
 
 		if (!isValid())
 			return "";
 
-		if (m_caret + size > m_data.size()) {
+		if (m_position + size > m_data.size() || size > maxSize * 3 + 3) {
 			invalidate();
 			return "";
 		}
 
-		std::string str(static_cast<const char*>(data()) + m_caret, size);
-		m_caret += size;
+		std::string str(static_cast<const char*>(data()) + m_position, size);
+		m_position += size;
 		return str;
 	}
 
@@ -290,11 +313,11 @@ namespace milk {
 		
 		while (true) {
 			if ((uValue & ~0x7Fu) == 0) {
-				m_data.push_back(uValue);
+				m_data.push_back(uint8_t(uValue));
 				return;
 			}
 
-			m_data.push_back((uValue & 0x7Fu) | 0x80u);
+			m_data.push_back(uint8_t(uValue & 0x7Fu) | 0x80u);
 			uValue >>= 7;
 		}
 	}
@@ -309,13 +332,13 @@ namespace milk {
 			return 0;
 
 		size = 0;
-		size_t caret = m_caret;
+		size_t caret = m_position;
 		uint32_t value = 0;
 		int position = 0;
 		uint8_t currentByte;
 
 		while (true) {
-			if (caret > m_data.size())
+			if (caret >= m_data.size())
 				return 0;
 
 			currentByte = m_data[caret++];
@@ -328,7 +351,7 @@ namespace milk {
 			if (position > 32) return 0;
 		}
 
-		size = caret - m_caret;
+		size = caret - m_position;
 		return std::bit_cast<int32_t>(value);
 	}
 
@@ -336,13 +359,13 @@ namespace milk {
 		if (!isValid())
 			return 0;
 
-		size_t caret = m_caret;
+		size_t caret = m_position;
 		uint32_t value = 0;
 		int position = 0;
 		uint8_t currentByte;
 
 		while (true) {
-			if (caret > m_data.size()) {
+			if (caret >= m_data.size()) {
 				invalidate();
 				return 0;
 			}
@@ -360,7 +383,7 @@ namespace milk {
 			}
 		}
 
-		m_caret = caret;
+		m_position = caret;
 		return std::bit_cast<int32_t>(value);
 	}
 
@@ -372,11 +395,11 @@ namespace milk {
 
 		while (true) {
 			if ((uValue & ~0x7Fu) == 0) {
-				m_data.push_back(uValue);
+				m_data.push_back(uint8_t(uValue));
 				return;
 			}
 
-			m_data.push_back((uValue & 0x7Fu) | 0x80u);
+			m_data.push_back(uint8_t(uValue & 0x7Fu) | 0x80u);
 			uValue >>= 7;
 		}
 	}
@@ -391,13 +414,13 @@ namespace milk {
 			return 0;
 
 		size = 0;
-		size_t caret = m_caret;
+		size_t caret = m_position;
 		uint64_t value = 0;
 		int position = 0;
 		uint8_t currentByte;
 
 		while (true) {
-			if (caret > m_data.size())
+			if (caret >= m_data.size())
 				return 0;
 
 			currentByte = m_data[caret++];
@@ -410,7 +433,7 @@ namespace milk {
 			if (position > 32) return 0;
 		}
 
-		size = caret - m_caret;
+		size = caret - m_position;
 		return std::bit_cast<int64_t>(value);
 	}
 
@@ -418,13 +441,13 @@ namespace milk {
 		if (!isValid())
 			return 0;
 
-		size_t caret = m_caret;
+		size_t caret = m_position;
 		uint64_t value = 0;
 		int position = 0;
 		uint8_t currentByte;
 
 		while (true) {
-			if (caret > m_data.size()) {
+			if (caret >= m_data.size()) {
 				invalidate();
 				return 0;
 			}
@@ -442,7 +465,7 @@ namespace milk {
 			}
 		}
 
-		m_caret = caret;
+		m_position = caret;
 		return std::bit_cast<int64_t>(value);
 	}
 

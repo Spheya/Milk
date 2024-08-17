@@ -19,6 +19,10 @@ namespace milk {
 		iterator end() noexcept;
 		const_iterator begin() const noexcept;
 		const_iterator end() const noexcept;
+		void resize(size_t size);
+		void reserve(size_t size);
+		void clear() noexcept;
+		void resetPosition() noexcept;
 
 		const void* data() const noexcept;
 		void* data() noexcept;
@@ -64,9 +68,9 @@ namespace milk {
 		double peekDouble() const;
 		double readDouble();
 
-		void writeString(const std::string& value);
-		std::string peekString() const;
-		std::string readString();
+		void writeString(const std::string& value, size_t maxSize);
+		std::string peekString(size_t maxSize) const;
+		std::string readString(size_t maxSize);
 
 		void writeVarInt(int32_t value);
 		int32_t peekVarInt() const;
@@ -102,7 +106,7 @@ namespace milk {
 
 	private:
 		std::vector<uint8_t> m_data;
-		size_t m_caret = 0;
+		size_t m_position = 0;
 		bool m_valid = true;
 	};
 

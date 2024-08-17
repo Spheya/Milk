@@ -10,15 +10,15 @@ project ("milk")
 add_subdirectory ("external")
 
 set(SOURCE_FILES
-	
-	"src/milk/Packet.cpp"
+	"src/milk/packets/Packet.cpp"
+	"src/milk/packets/PacketHandler.cpp"
 )
 
-add_library (milk ${SOURCE_FILES}   )
+add_library (milk ${SOURCE_FILES})
 set_property(TARGET milk PROPERTY CXX_STANDARD 20)
 
 target_include_directories(milk PUBLIC "src")
-target_link_libraries(milk PUBLIC asio glm json)
+target_link_libraries(milk PUBLIC asio concurrentqueue glm json)
 
 if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
   add_subdirectory ("example")
