@@ -2,7 +2,7 @@
 
 #include <memory>
 #include "Packet.hpp" 
-#include "../EventBus.hpp"
+#include "EventBus.hpp"
 
 namespace milk {
 	class TcpConnection;

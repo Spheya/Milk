@@ -11,13 +11,6 @@ namespace milk {
 
 	class EventBus {
 	public:
-		EventBus() = default;
-		EventBus(EventBus&) = delete;
-		EventBus& operator=(EventBus&) = delete;
-		EventBus(EventBus&&) = default;
-		EventBus& operator=(EventBus&&) = default;
-		~EventBus() = default;
-
 		/**
 		 * @brief Subscribe an event handler to the bus
 		 * @tparam T The type of the event you want to handle

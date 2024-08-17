@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "../ConnectionState.hpp"
+#include "ConnectionState.hpp"
 #include "Packet.hpp"
 
 namespace milk {

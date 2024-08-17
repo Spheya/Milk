@@ -3,7 +3,7 @@
 #include <string>
 
 #include "Packet.hpp"
-#include "../ConnectionState.hpp"
+#include "ConnectionState.hpp"
 
 namespace milk {
 	namespace clientbound {

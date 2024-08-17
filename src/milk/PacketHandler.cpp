@@ -1,6 +1,6 @@
 #include "PacketHandler.hpp"
 
-#include "../net/TcpConnection.hpp"
+#include "TcpConnection.hpp"
 #include "Serverbound.hpp"
 
 #define MILK_HANDLE_PACKET(x) case x::packetId: packetBus.invoke(IncomingPacketEvent<x>{x::deserialize(packet), std::move(sender)}); break
