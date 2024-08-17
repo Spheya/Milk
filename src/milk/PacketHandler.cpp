@@ -3,7 +3,16 @@
 #include "TcpConnection.hpp"
 #include "Serverbound.hpp"
 
-#define MILK_HANDLE_PACKET(x) case x::packetId: packetBus.invoke(IncomingPacketEvent<x>{x::deserialize(packet), std::move(sender)}); break
+#include <iostream>
+
+#define MILK_HANDLE_PACKET(x)                                                       \
+case x::packetId: {                                                                 \
+	x p = x::deserialize(packet);                                                   \
+	if(packet.isValid())                                                            \
+		packetBus.invoke(IncomingPacketEvent<x>{ std::move(p), std::move(sender)}); \
+	else                                                                            \
+		sender->disconnect();                                                       \
+} break
 
 namespace milk {
 	void handleIncomingPacket(std::shared_ptr<TcpConnection> sender, Packet& packet, EventBus& packetBus) {
@@ -29,13 +38,25 @@ namespace milk {
 		case ConnectionState::Login:
 			switch (packetId) {
 				MILK_HANDLE_PACKET(serverbound::LoginStart);
+				MILK_HANDLE_PACKET(serverbound::LoginAcknowledged);
 			}
 			break;
 
-		case ConnectionState::Transfer:
+		case ConnectionState::Configuration:
 			switch (packetId) {
-			case 0x00:
-				break;
+				MILK_HANDLE_PACKET(serverbound::AcknowledgeFinishConfiguration);
+
+			default:
+				std::cout << "[configuration] packet received with id: " << packetId << std::endl;
+			}
+			break;
+
+		case ConnectionState::Play:
+			switch (packetId) {
+
+
+			default:
+				std::cout << "[play] packet received with id: " << packetId << std::endl;
 			}
 			break;
 		}

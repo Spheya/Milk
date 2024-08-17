@@ -56,5 +56,41 @@ namespace milk {
 			}
 		};
 
+		struct FinishConfiguration {
+			static constexpr ConnectionState connectionState = ConnectionState::Configuration;
+			static constexpr int32_t packetId = 0x03;
+
+			Packet serialize() {
+				Packet packet;
+				packet.writeVarInt(packetId);
+				return packet;
+			}
+		};
+
+		struct ChunkBatchFinished {
+			static constexpr ConnectionState connectionState = ConnectionState::Play;
+			static constexpr int32_t packetId = 0x0C;
+
+			int32_t batchSize;
+
+			Packet serialize() {
+				Packet packet;
+				packet.writeVarInt(packetId);
+				packet.writeVarInt(batchSize);
+				return packet;
+			}
+		};
+
+		struct ChunkBatchStart {
+			static constexpr ConnectionState connectionState = ConnectionState::Play;
+			static constexpr int32_t packetId = 0x0D;
+
+			Packet serialize() {
+				Packet packet;
+				packet.writeVarInt(packetId);
+				return packet;
+			}
+		};
+
 	}
 }

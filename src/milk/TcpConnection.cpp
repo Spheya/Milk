@@ -13,9 +13,8 @@ namespace milk {
 		readPacket();
 	}
 
-	void TcpConnection::close() {
+	void TcpConnection::disconnect() {
 		m_socket.close();
-
 	}
 
 	bool TcpConnection::isConnected() const {
@@ -52,7 +51,7 @@ namespace milk {
 		auto self = shared_from_this();
 		m_socket.async_read_some(asio::buffer(static_cast<uint8_t*>(m_incomingPacket.data()) + byte, 1), [this, self, byte](asio::error_code ec, size_t length) {
 			if (ec) {
-				close(); // connection error
+				disconnect(); // connection error
 				return;
 			}
 
@@ -68,7 +67,7 @@ namespace milk {
 		auto self = shared_from_this();
 		int packetLength = m_incomingPacket.readVarInt();
 		if (!m_incomingPacket.isValid()) {
-			close(); // invalid packet header
+			disconnect(); // invalid packet header
 			return;
 		}
 
@@ -76,7 +75,7 @@ namespace milk {
 		m_incomingPacket.resize(packetLength);
 		m_socket.async_read_some(asio::buffer(m_incomingPacket.data(), packetLength), [this, self](asio::error_code ec, size_t length) {
 			if (ec) {
-				close(); // connection error
+				disconnect(); // connection error
 				return;
 			}
 

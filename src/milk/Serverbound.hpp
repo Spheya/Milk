@@ -12,17 +12,21 @@ namespace milk {
 			static constexpr ConnectionState connectionState = ConnectionState::HandShaking;
 			static constexpr int32_t packetId = 0x00;
 
+			enum class NextState : int32_t {
+				Status = 1, Login = 2, Transfer = 3
+			};
+
 			int protocolVersion;
 			std::string serverAdress;
 			int16_t port;
-			ConnectionState nextState;
+			NextState nextState;
 
 			static Handshake deserialize(Packet& packet) {
 				return {
 					packet.readVarInt(),
 					packet.readString(255),
 					packet.readShort(),
-					ConnectionState(packet.readVarInt())
+					NextState(packet.readVarInt())
 				};
 			}
 		};
@@ -72,6 +76,24 @@ namespace milk {
 					packet.readLong(),
 					packet.readLong()
 				};
+			}
+		};
+
+		struct LoginAcknowledged {
+			static constexpr ConnectionState connectionState = ConnectionState::Login;
+			static constexpr int32_t packetId = 0x03;
+
+			static LoginAcknowledged deserialize(Packet& packet) {
+				return {};
+			}
+		};
+
+		struct AcknowledgeFinishConfiguration {
+			static constexpr ConnectionState connectionState = ConnectionState::Configuration;
+			static constexpr int32_t packetId = 0x03;
+
+			static AcknowledgeFinishConfiguration deserialize(Packet& packet) {
+				return {};
 			}
 		};
 	}

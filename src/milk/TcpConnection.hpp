@@ -11,7 +11,7 @@ namespace milk {
 		TcpConnection(asio::ip::tcp::socket socket, std::shared_ptr<EventBus> packetBus);
 
 		void start();
-		void close();
+		void disconnect();
 
 		bool isConnected() const;
 		void send(Packet packet);
