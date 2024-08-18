@@ -1,13 +1,12 @@
 #pragma once
 
-#include "milk/Networking.hpp"
-#include "milk/TcpConnection.hpp"
-#include "milk/TcpServer.hpp"
+#include "milk/core/EventBus.hpp"
 
-#include "milk/Packet.hpp"
-#include "milk/Serverbound.hpp"
-#include "milk/ClientBound.hpp"
-#include "milk/PacketHandler.hpp"
+#include "milk/net/TcpConnection.hpp"
+#include "milk/net/TcpServer.hpp"
 
-#include "milk/ConnectionState.hpp"
-#include "milk/EventBus.hpp"
+#include "milk/protocol/ConnectionState.hpp"
+#include "milk/protocol/Packet.hpp"
+#include "milk/protocol/PacketHandler.hpp"
+
+#include "milk/types/UUID.hpp"

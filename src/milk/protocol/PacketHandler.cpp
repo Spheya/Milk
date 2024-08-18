@@ -1,7 +1,7 @@
 #include "PacketHandler.hpp"
 
-#include "TcpConnection.hpp"
-#include "Serverbound.hpp"
+#include "milk/net/TcpConnection.hpp"
+#include "milk/Protocol.hpp"
 
 #include <iostream>
 
@@ -15,13 +15,13 @@ case x::packetId: {                                                             
 } break
 
 namespace milk {
-	void handleIncomingPacket(std::shared_ptr<TcpConnection> sender, Packet& packet, EventBus& packetBus) {
+	void handleIncomingPacket(std::shared_ptr<net::TcpConnection> sender, Packet& packet, EventBus& packetBus) {
 		int32_t packetId = packet.readVarInt();
 		if (!packet.isValid())
 			return;
 
 		switch (sender->getState()) {
-		case ConnectionState::HandShaking:
+		case ConnectionState::Handshaking:
 			switch (packetId) {
 				MILK_HANDLE_PACKET(serverbound::Handshake);
 				MILK_HANDLE_PACKET(serverbound::LegacyServerPing);

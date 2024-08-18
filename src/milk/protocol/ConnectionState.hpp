@@ -5,7 +5,7 @@
 namespace milk {
 
 	enum class ConnectionState : uint8_t {
-		HandShaking, Status, Login, Configuration, Play
+		Handshaking, Status, Login, Configuration, Play
 	};
 
 }

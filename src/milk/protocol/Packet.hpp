@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 
-#include "UUID.hpp"
+#include "milk/types/UUID.hpp"
 
 namespace milk {
 

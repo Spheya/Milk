@@ -10,11 +10,11 @@ project ("milk")
 add_subdirectory ("external")
 
 set(SOURCE_FILES
-	"src/milk/Packet.cpp"
-	"src/milk/PacketHandler.cpp"
-	"src/milk/TcpConnection.cpp"
-	"src/milk/TcpServer.cpp"
-	"src/milk/UUID.cpp"
+	"src/milk/protocol/Packet.cpp"
+	"src/milk/protocol/PacketHandler.cpp"
+	"src/milk/net/TcpConnection.cpp"
+	"src/milk/net/TcpServer.cpp"
+	"src/milk/types/UUID.cpp"
 )
 
 add_library (milk ${SOURCE_FILES} )

@@ -1,8 +1,10 @@
 #include <milk.hpp>
+#include <milk/Protocol.hpp>
+
 #include <iostream>
 
 int main() {
-	milk::TcpServer server(25565);
+	milk::net::TcpServer server(25565);
 
 	server.getPacketBus().subscribeImmediateHandler<milk::IncomingPacketEvent<milk::serverbound::Handshake>>(
 		[](const milk::IncomingPacketEvent<milk::serverbound::Handshake>& packet) {
@@ -64,12 +66,6 @@ int main() {
 	server.getPacketBus().subscribeImmediateHandler<milk::IncomingPacketEvent<milk::serverbound::AcknowledgeFinishConfiguration>>(
 		[](const milk::IncomingPacketEvent<milk::serverbound::AcknowledgeFinishConfiguration>& packet) {
 			packet.sender->setState(milk::ConnectionState::Play);
-
-			milk::clientbound::ChunkBatchStart response1;
-			packet.sender->send(response1.serialize());
-
-			milk::clientbound::ChunkBatchFinished response2{0};
-			packet.sender->send(response2.serialize());
 		}
 	);
 
