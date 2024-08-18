@@ -3,6 +3,8 @@
 #include <vector>
 #include <string>
 
+#include "UUID.hpp"
+
 namespace milk {
 
 	class Packet {
@@ -81,6 +83,10 @@ namespace milk {
 		int64_t peekVarLong() const;
 		int64_t peekVarLong(size_t& size) const;
 		int64_t readVarLong();
+
+		void writeUUID(UUID uuid);
+		UUID peekUUID() const;
+		UUID readUUID();
 
 	private:
 		/**

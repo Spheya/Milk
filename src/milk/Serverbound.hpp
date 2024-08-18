@@ -67,14 +67,12 @@ namespace milk {
 			static constexpr int32_t packetId = 0x00;
 
 			std::string name;
-			int64_t uuid1;
-			int64_t uuid2;
+			UUID uuid;
 
 			static LoginStart deserialize(Packet& packet) {
 				return {
 					packet.readString(16),
-					packet.readLong(),
-					packet.readLong()
+					packet.readUUID()
 				};
 			}
 		};

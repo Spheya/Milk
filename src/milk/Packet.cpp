@@ -469,4 +469,24 @@ namespace milk {
 		return std::bit_cast<int64_t>(value);
 	}
 
+	void Packet::writeUUID(UUID uuid) {
+		writeLong(uuid.components[0]);
+		writeLong(uuid.components[1]);
+	}
+
+	UUID Packet::peekUUID() const {
+		UUID uuid;
+		peekNumberData(uuid.components, sizeof(uint64_t) * 2);
+		if constexpr (std::endian::native == std::endian::little)
+			std::swap(uuid.components[0], uuid.components[1]);
+		return uuid;
+	}
+
+	UUID Packet::readUUID() {
+		UUID uuid;
+		readNumberData(uuid.components, sizeof(uint64_t) * 2);
+		if constexpr (std::endian::native == std::endian::little)
+			std::swap(uuid.components[0], uuid.components[1]);
+		return uuid;
+	}
 }

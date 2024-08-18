@@ -45,8 +45,7 @@ int main() {
 	server.getPacketBus().subscribe<milk::IncomingPacketEvent<milk::serverbound::LoginStart>>(
 		[](const milk::IncomingPacketEvent<milk::serverbound::LoginStart>& packet) {
 			milk::clientbound::LoginSuccess response;
-			response.uuid1 = packet.packet.uuid1;
-			response.uuid2 = packet.packet.uuid2;
+			response.uuid = packet.packet.uuid;
 			response.username = packet.packet.name;
 
 			packet.sender->send(response.serialize());

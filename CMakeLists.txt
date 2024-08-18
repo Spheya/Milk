@@ -12,9 +12,12 @@ add_subdirectory ("external")
 set(SOURCE_FILES
 	"src/milk/Packet.cpp"
 	"src/milk/PacketHandler.cpp"
+	"src/milk/TcpConnection.cpp"
+	"src/milk/TcpServer.cpp"
+	"src/milk/UUID.cpp"
 )
 
-add_library (milk ${SOURCE_FILES} "src/milk/TcpConnection.cpp" "src/milk/TcpServer.cpp")
+add_library (milk ${SOURCE_FILES} )
 set_property(TARGET milk PROPERTY CXX_STANDARD 20)
 
 target_include_directories(milk PUBLIC "src")

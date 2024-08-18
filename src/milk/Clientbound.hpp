@@ -40,15 +40,13 @@ namespace milk {
 			static constexpr ConnectionState connectionState = ConnectionState::Login;
 			static constexpr int32_t packetId = 0x02;
 
-			int64_t uuid1;
-			int64_t uuid2;
+			UUID uuid;
 			std::string username;
 
 			Packet serialize() {
 				Packet packet;
 				packet.writeVarInt(packetId);
-				packet.writeLong(uuid1);
-				packet.writeLong(uuid1);
+				packet.writeUUID(uuid);
 				packet.writeString(username, 16);
 				packet.writeVarInt(0);
 				packet.writeBool(false);
