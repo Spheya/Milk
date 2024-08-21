@@ -1,28 +1,28 @@
-#include "TcpConnection.hpp"
+#include "Connection.hpp"
 
 #include "milk/protocol/PacketHandler.hpp"
 
 namespace milk {
 	namespace net {
 
-		TcpConnection::TcpConnection(asio::ip::tcp::socket socket, std::shared_ptr<EventBus> packetBus) :
+		Connection::Connection(asio::ip::tcp::socket socket, std::shared_ptr<EventBus> packetBus) :
 			m_socket(std::move(socket)),
 			m_packetBus(std::move(packetBus)) {
 		}
 
-		void TcpConnection::start() {
+		void Connection::start() {
 			readPacket();
 		}
 
-		void TcpConnection::disconnect() {
+		void Connection::disconnect() {
 			m_socket.close();
 		}
 
-		bool TcpConnection::isConnected() const {
+		bool Connection::isConnected() const {
 			return m_socket.is_open();
 		}
 
-		void TcpConnection::send(Packet packet) {
+		void Connection::send(Packet packet) {
 			auto self = shared_from_this();
 
 			asio::post(m_socket.get_executor(), [this, self, packet]() {
@@ -31,24 +31,24 @@ namespace milk {
 
 				asio::write(m_socket, asio::buffer(m_outgoingHeader.data(), m_outgoingHeader.size()));
 				asio::write(m_socket, asio::buffer(packet.data(), packet.size()));
-				});
+			});
 		}
 
-		ConnectionState TcpConnection::getState() const {
+		ConnectionState Connection::getState() const {
 			return m_connectionState;
 		}
 
-		void TcpConnection::setState(ConnectionState state) {
+		void Connection::setState(ConnectionState state) {
 			m_connectionState = state;
 		}
 
-		void TcpConnection::readPacket() {
+		void Connection::readPacket() {
 			m_incomingPacket.resetPosition();
 			m_incomingPacket.resize(5);
 			readPacketHeader(0);
 		}
 
-		void TcpConnection::readPacketHeader(int byte) {
+		void Connection::readPacketHeader(int byte) {
 			auto self = shared_from_this();
 			m_socket.async_read_some(asio::buffer(static_cast<uint8_t*>(m_incomingPacket.data()) + byte, 1), [this, self, byte](asio::error_code ec, size_t length) {
 				if (ec) {
@@ -61,10 +61,10 @@ namespace milk {
 				} else {
 					readPacketBody();
 				}
-				});
+			});
 		}
 
-		void TcpConnection::readPacketBody() {
+		void Connection::readPacketBody() {
 			auto self = shared_from_this();
 			int packetLength = m_incomingPacket.readVarInt();
 			if (!m_incomingPacket.isValid()) {
@@ -83,7 +83,7 @@ namespace milk {
 				handleIncomingPacket(self, m_incomingPacket, *m_packetBus);
 
 				readPacket();
-				});
+			});
 		}
 
 	}

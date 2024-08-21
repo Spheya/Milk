@@ -3,6 +3,9 @@
 #include <vector>
 #include <string>
 
+#include <nbt.hpp>
+
+#include "milk/types/Identifier.hpp"
 #include "milk/types/UUID.hpp"
 
 namespace milk {
@@ -84,9 +87,15 @@ namespace milk {
 		int64_t peekVarLong(size_t& size) const;
 		int64_t readVarLong();
 
+		void writeIdentifier(const Identifier& identifier);
+		Identifier peekIdentifier() const;
+		Identifier readIdentifier();
+
 		void writeUUID(UUID uuid);
 		UUID peekUUID() const;
 		UUID readUUID();
+
+		void writeNbtData(const nbt::Data& data);
 
 	private:
 		/**

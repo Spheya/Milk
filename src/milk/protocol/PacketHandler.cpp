@@ -1,6 +1,6 @@
 #include "PacketHandler.hpp"
 
-#include "milk/net/TcpConnection.hpp"
+#include "milk/net/Connection.hpp"
 #include "milk/Protocol.hpp"
 
 #include <iostream>
@@ -15,7 +15,7 @@ case x::packetId: {                                                             
 } break
 
 namespace milk {
-	void handleIncomingPacket(std::shared_ptr<net::TcpConnection> sender, Packet& packet, EventBus& packetBus) {
+	void handleIncomingPacket(std::shared_ptr<net::Connection> sender, Packet& packet, EventBus& packetBus) {
 		int32_t packetId = packet.readVarInt();
 		if (!packet.isValid())
 			return;
@@ -53,7 +53,7 @@ namespace milk {
 
 		case ConnectionState::Play:
 			switch (packetId) {
-
+			case 0:
 
 			default:
 				std::cout << "[play] packet received with id: " << packetId << std::endl;

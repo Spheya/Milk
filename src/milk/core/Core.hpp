@@ -1,0 +1,4 @@
+#pragma once
+
+#define MILK_PROTOCOL_VERSION 767
+#define MILK_MINECRAFT_VERSION "1.21.1"

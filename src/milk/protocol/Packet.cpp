@@ -469,6 +469,18 @@ namespace milk {
 		return std::bit_cast<int64_t>(value);
 	}
 
+	void Packet::writeIdentifier(const Identifier& identifier) {
+		writeString(identifier.stringifyMinimal(), 32767);
+	}
+
+	Identifier Packet::peekIdentifier() const {
+		return Identifier(peekString(32767));
+	}
+
+	Identifier Packet::readIdentifier() {
+		return Identifier(readString(32767));
+	}
+
 	void Packet::writeUUID(UUID uuid) {
 		writeLong(uuid.components[0]);
 		writeLong(uuid.components[1]);
@@ -489,4 +501,9 @@ namespace milk {
 			std::swap(uuid.components[0], uuid.components[1]);
 		return uuid;
 	}
+
+	void Packet::writeNbtData(const nbt::Data& data) {
+		writeData(data.data(), data.size());
+	}
+
 }

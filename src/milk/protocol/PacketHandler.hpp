@@ -7,14 +7,14 @@
 
 namespace milk {
 	namespace net {
-		class TcpConnection;
+		class Connection;
 	}
 
 	template<typename T>
 	struct IncomingPacketEvent {
 		T packet;
-		std::shared_ptr<net::TcpConnection> sender;
+		std::shared_ptr<net::Connection> sender;
 	};
 
-	void handleIncomingPacket(std::shared_ptr<net::TcpConnection> sender, Packet& packet, EventBus& packetBus);
+	void handleIncomingPacket(std::shared_ptr<net::Connection> sender, Packet& packet, EventBus& packetBus);
 }

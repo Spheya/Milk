@@ -8,9 +8,9 @@
 namespace milk {
 	namespace net {
 
-		class TcpConnection : public std::enable_shared_from_this<TcpConnection> {
+		class Connection : public std::enable_shared_from_this<Connection> {
 		public:
-			TcpConnection(asio::ip::tcp::socket socket, std::shared_ptr<EventBus> packetBus);
+			Connection(asio::ip::tcp::socket socket, std::shared_ptr<EventBus> packetBus);
 
 			void start();
 			void disconnect();

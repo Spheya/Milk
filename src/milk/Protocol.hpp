@@ -13,7 +13,11 @@
 #include "protocol/clientbound/login/LoginSuccess.hpp"
 
 #include "protocol/serverbound/configuration/AcknowledgeFinishConfiguration.hpp"
+#include "protocol/clientbound/configuration/PluginMessage.hpp"
 #include "protocol/clientbound/configuration/FinishConfiguration.hpp"
+#include "protocol/clientbound/configuration/RegistryData.hpp"
+
+#include "protocol/clientbound/play/Login.hpp"
 
 namespace milk {
 	namespace serverbound {
@@ -27,5 +31,6 @@ namespace milk {
 		using namespace configuration;
 		using namespace login;
 		using namespace status;
+		using namespace play;
 	}
 }
